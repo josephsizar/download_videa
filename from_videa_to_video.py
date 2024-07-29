@@ -21,10 +21,10 @@ def get_video_src(url_website):
             # Wait for a few seconds to ensure video element is fully loaded
             page.wait_for_timeout(5000)
 
+            # Extract video source
             video_src = page.eval_on_selector('video', 'video => video.src')
         except Exception as e:
-            print(f"Error: {e}")
-            video_src = None
+            print(f"Error retrieving video source: {e}")
         finally:
             browser.close()
     
@@ -39,14 +39,21 @@ def handle_text(message):
     message_text = message.text
     
     # Basic URL validation
-    url_regex = re.compile(r'(https?://[^\s]+)')
+    url_regex = re.compile(r'https?://[^\s]+')
     url_match = url_regex.search(message_text)
     
     if url_match:
         url = url_match.group(0)
         try:
             video_url = get_video_src(url)
-            bot.send_message(message, f"[videa video]({video_url})" or 'No video source found',parse_mode="Markdown")
+            if video_url:
+                bot.send_message(
+                    message.chat.id, 
+                    f"[videa video]({video_url})" or 'No video source found', 
+                    parse_mode="MarkdownV2"
+                )
+            else:
+                bot.reply_to(message, 'No video source found.')
         except Exception as e:
             print(f"Error retrieving video source: {e}")
             bot.reply_to(message, 'Error retrieving video source.')
@@ -55,3 +62,4 @@ def handle_text(message):
 
 print("Bot is running...")
 bot.polling()
+
