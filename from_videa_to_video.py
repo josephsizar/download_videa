@@ -46,7 +46,7 @@ def handle_text(message):
         url = url_match.group(0)
         try:
             video_url = get_video_src(url)
-            bot.reply_to(message, video_url or 'No video source found')
+            bot.send_message(message, f"[videa video]({video_url})" or 'No video source found',parse_mode="Markdown")
         except Exception as e:
             print(f"Error retrieving video source: {e}")
             bot.reply_to(message, 'Error retrieving video source.')
